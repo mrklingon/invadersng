@@ -1,5 +1,9 @@
-let yy = 0
-let yyy = 0
+input.onButtonPressed(Button.A, function () {
+    ship += -1
+    if (ship < 0) {
+        ship = 0
+    }
+})
 function shiftStars () {
     for (let index2 = 0; index2 <= 3; index2++) {
         yy = 3 - index2
@@ -18,8 +22,33 @@ function doStars () {
         }
     }
 }
+function doBlast () {
+    for (let torp = 0; torp <= 3; torp++) {
+        led.plotBrightness(ship, 3 - torp, 255)
+        basic.pause(50)
+    }
+    for (let torp = 0; torp <= 3; torp++) {
+        led.plotBrightness(ship, 3 - torp, 0)
+    }
+}
+input.onButtonPressed(Button.AB, function () {
+    music.playTone(523, music.beat(BeatFraction.Sixteenth))
+    doBlast()
+})
+input.onButtonPressed(Button.B, function () {
+    ship += 1
+    if (ship > 4) {
+        ship = 4
+    }
+})
+let yyy = 0
+let yy = 0
+let ship = 0
+let speed = 1
+ship = 2
 basic.forever(function () {
     doStars()
     shiftStars()
-    basic.pause(100)
+    led.plot(ship, 4)
+    basic.pause(250 / speed)
 })
