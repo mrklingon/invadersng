@@ -14,6 +14,7 @@ function shiftStars () {
     }
 }
 function doStars () {
+    wait += -1
     for (let index = 0; index <= 4; index++) {
         if (6 < randint(0, 10)) {
             led.plotBrightness(index, 0, randint(50, 190))
@@ -21,9 +22,29 @@ function doStars () {
             led.unplot(index, 0)
         }
     }
+    if (0 >= wait) {
+        wait = randint(10, 20)
+        for (let index = 0; index <= 4; index++) {
+            led.plotBrightness(index, 0, 250)
+        }
+        speed += 0.33
+        music.playTone(131, music.beat(BeatFraction.Half))
+    }
+}
+function checkEnemy () {
+    ECount = 0
+    for (let ex = 0; ex <= 4; ex++) {
+        if (led.pointBrightness(ex, 4) == 250) {
+            ECount += 1
+        }
+    }
+    return ECount
 }
 function doBlast () {
     for (let torp = 0; torp <= 3; torp++) {
+        if (led.pointBrightness(ship, 3 - torp) == 250) {
+            skore += randint(10, 30)
+        }
         led.plotBrightness(ship, 3 - torp, 255)
         basic.pause(50)
     }
@@ -41,14 +62,45 @@ input.onButtonPressed(Button.B, function () {
         ship = 4
     }
 })
+input.onGesture(Gesture.Shake, function () {
+    music.playTone(784, music.beat(BeatFraction.Quarter))
+    if (droid) {
+        droid = false
+    } else {
+        droid = true
+    }
+})
+let ECount = 0
 let yyy = 0
 let yy = 0
+let wait = 0
 let ship = 0
-let speed = 1
+let droid = false
+droid = false
+let speed = 0.5
 ship = 2
+game.setLife(10)
+let skore = 0
+game.setScore(0)
+wait = 20
 basic.forever(function () {
     doStars()
     shiftStars()
+    if (checkEnemy() > 0) {
+        game.addScore(skore)
+        skore = 0
+        game.removeLife(checkEnemy())
+    }
     led.plot(ship, 4)
-    basic.pause(250 / speed)
+    basic.pause(300 / speed)
+})
+basic.forever(function () {
+    if (droid) {
+        for (let shipx = 0; shipx <= 4; shipx++) {
+            ship = shipx
+            led.plot(ship, 4)
+            doBlast()
+            basic.pause(100)
+        }
+    }
 })
