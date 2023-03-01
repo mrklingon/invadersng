@@ -76,6 +76,7 @@ let yy = 0
 let wait = 0
 let ship = 0
 let droid = false
+basic.showString("Invaders 2.0")
 droid = false
 let speed = 0.5
 ship = 2
@@ -95,12 +96,12 @@ basic.forever(function () {
     basic.pause(300 / speed)
 })
 basic.forever(function () {
-    if (droid) {
+    if (droid && !(game.isGameOver())) {
         for (let shipx = 0; shipx <= 4; shipx++) {
             ship = shipx
             led.plot(ship, 4)
             doBlast()
-            basic.pause(100)
+            basic.pause(randint(100, 300))
         }
     }
 })
